@@ -209,6 +209,8 @@ For each `.md` outline, dispatch a second subagent (or do inline for small scope
 
 Each rendering agent should be told the EXACT class contract (`.concept-card`, `.card-section.eli5/.formal/...`, `.mcq[data-correct]`, etc.) so they don't invent new structures.
 
+**Tell every rendering agent: NEVER hardcode hex/named colors in inline styles** (no `style="background:#FFF6E8"`, no `color:#fff`, no `border-color:#E76F51`). Inline colors are skin-coupled and break when the skin changes — a light background hardcoded on a dark skin renders light-text-on-light-box that looks like garbled/overlapping fonts. Use theme variables (`var(--surface-2)`, `var(--eli5-bg)`, `var(--coral)`, …) or semantic classes only. This is the single most common rendering bug.
+
 ### 3.4 Build the hub
 `<output>/index.html`:
 - Card grid of all lectures
@@ -234,6 +236,13 @@ Dark-horse topics tend to be:
 - Theoretical properties (convergence, complexity, anti-monotone) when past papers focused on computation
 - Tool / software workflows when past papers focused on math
 - Subtle definitional distinctions (e.g., open-vs-closed itemsets, hard-vs-soft margins)
+
+### 4.2b Color-leak audit (dark skins especially)
+After generation, grep every produced HTML for hardcoded inline backgrounds that clash with the skin:
+```
+grep -rn 'background:\s*#\(FFF\|fff\|FAF\|FBF\|EDF\|FDF\|FFE\)\|background:\s*white' "interactive note"/*.html
+```
+Replace any hits with theme variables (`var(--surface-2)`, `var(--eli5-bg)`, etc.). A light background hardcoded on a dark skin produces light-text-on-light-box that looks like overlapping/garbled fonts — the most common post-generation rendering bug.
 
 ### 4.3 Cheat sheet PDF (optional)
 If the course has formulas:

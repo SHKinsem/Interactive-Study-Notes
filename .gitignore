@@ -1,0 +1,14 @@
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Scratch / generated output (skill produces these in the user's course folder, not here)
+_content/
+*.local.*

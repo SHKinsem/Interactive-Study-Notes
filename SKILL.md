@@ -122,7 +122,7 @@ Read `references/workflow.md` for the full step-by-step. Quick summary:
 
 ### Phase 2 — Template (build ONE, validate, then batch)
 5. Pick the highest-priority lecture as the template. Ideally one that exercises many feature types (math + diagram + concept + worked example).
-6. Build the template as a self-contained HTML first (CSS/JS inlined). Use the chosen skin's CSS as the base. Show the user; defer interactive verification to them (Claude can't click).
+6. Build the template as a self-contained HTML first (CSS/JS inlined). Use the chosen skin's CSS as the base. Verify it: if a headless browser is available, screenshot the rendered page (and script a click/drag for the interactive bits); otherwise show the user and ask them to click through.
 7. Once approved, copy `assets/notes-<skin>.css` and `assets/notes-<skin>.js` to the output folder. Rename them to `assets/notes.css` and `assets/notes.js` (so subsequent HTML files just reference these). Refactor the template to use the shared files.
 
 ### Phase 3 — Batch production
@@ -133,7 +133,7 @@ Read `references/workflow.md` for the full step-by-step. Quick summary:
 ### Phase 4 — Polish
 11. **Add 🌑 dark-horse MCQs** (one polish-pass agent per lecture, or inline). Re-read the lecture PDF for each lecture, identify slide content NOT covered by past papers/homework, and add 2-3 untested-topic MCQs to that lecture's final quiz section.
 12. Optional: companion A4 cheat-sheet PDF for math-heavy courses.
-13. Ask the user to spot-check 1-2 notes in the browser. Claude **cannot** verify interactivity; the user must.
+13. Verify the output. If a headless browser is available, screenshot a couple of finished pages (and drive one or two interactions via a Playwright/CDP script) to confirm rendering + behavior; in any case, ask the user for a final spot-check, since a human click-through is the fastest confidence check.
 
 ## Common iteration patterns
 
@@ -156,7 +156,7 @@ Handle each as a focused edit, NOT a full rebuild. The shared-assets pattern mea
 - **❌ Assuming the reader has seen the slides** — every jargon term (algorithm names, abbreviations, metrics, math symbols) MUST be expanded inline on first appearance in every section. Past complaint: "假设我看过课件了，但是我希望是把我当作没看过课件的人来教".
 - **❌ Defaulting silently to one skin** — match skin to subject. Past complaint when wrong: "怎么是 [other course] 那个设计风格".
 - **❌ Two-column 50/50 layouts where one side is sparse** — leaves big empty rectangles. Skin B uses `flex-wrap` with `flex: 1 1 calc(50% - 9px)` so single sections expand. Skin A defaults to single column.
-- **❌ Claiming the interactivity works** — Claude cannot click. Always defer to the user with specifics like "Open the file, click any 翻卡 in section 2 — should flip; answer a wrong MCQ option — should turn red with explanation visible."
+- **❌ Claiming the interactivity works without checking** — If a headless browser is available (Chrome/Chromium + shell), DO verify: screenshot the rendered page for layout/fonts/math, and for interaction-heavy pages write a short Playwright/CDP script that clicks a flip-card / answers an MCQ / drags a demo point and screenshots the result. If no browser is available, say so honestly and defer to the user with specifics like "Open the file, click any 翻卡 in section 2 — should flip; answer a wrong MCQ option — should turn red with explanation visible." Never assert "it works" from reading the source alone.
 - **❌ Building before reading scope** — wastes tokens producing notes for topics that aren't on the exam.
 - **❌ Skipping past papers / homework** — produces "too abstract" notes. These materials reveal *what gets tested* in a way slides never do.
 - **❌ Heavy frameworks** — no React, no Vite, no npm. Vanilla HTML/CSS/JS. The user double-clicks the file.

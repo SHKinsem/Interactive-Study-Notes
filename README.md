@@ -109,7 +109,7 @@ When the skill produces notes for your course, it copies the chosen skin's CSS a
 
 ## Limitations
 
-- Claude can't open a browser to verify interactivity itself — you have to spot-check the produced HTML by opening it.
+- Verification depends on the environment. If a browser (e.g. headless Chrome/Chromium) and shell access are available, Claude can screenshot the rendered page to check layout, fonts, and math — and can even script clicks/drags via Playwright/CDP to verify interactions. In sandboxes without a browser (or on Claude.ai without shell), Claude can't see the rendered result, so a human spot-check is needed. Either way, a quick human click-through is the fastest final confidence check.
 - Subagent fan-out is fast but can be token-expensive for large courses (15+ lectures). The skill batches sensibly but a 17-lecture course can use ~150-200k tokens end-to-end.
 - KaTeX is loaded from CDN by default. For fully offline classrooms, download KaTeX manually and update the asset paths.
 - The skill assumes lecture content is in PDFs/PPTs in a single folder. For more exotic sources (videos, websites), pre-process to PDF first.
